@@ -1,7 +1,8 @@
 const canvas = document.getElementById("kaili-brush");
+const brushSizeInput = document.getElementById("brushSize");
 const ctx = canvas.getContext("2d");
 
-
+/* Ma fonction pour mon brush de base*/
 let drawing = false;
 let lastX = 0;
 let lastY = 0;
@@ -26,13 +27,18 @@ canvas.addEventListener("pointermove", (e) => {
 
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
+    ctx.lineJoin = "round";
     ctx.lineTo(x, y);
-    ctx.lineWigth = 10;
+    ctx.lineWidth = brushSize;
     ctx.lineCap = "round";
     ctx.stroke();
 
     lastX = x;
-    lastY = y;    l
+    lastY = y;    
 });
+/* Ma fonction pour le slider de mise a jour de la taille du brush */
+let brushSize = brushSizeInput.value;
 
-
+brushSizeInput.addEventListener("input", () => {
+    brushSize = brushSizeInput.value;
+});
