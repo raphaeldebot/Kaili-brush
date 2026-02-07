@@ -3,9 +3,13 @@ const ctx = canvas.getContext("2d");
 
 
 let drawing = false;
+let lastX = 0;
+let lastY = 0;
 
-canvas.addEventListener("pointerdown", () => {
+canvas.addEventListener("pointerdown", (e) => {
     drawing = true;
+    lastX = e.offsetX;
+    lastY = e.offsetY;
 });
 
 canvas.addEventListener("pointerup", () => {
@@ -21,8 +25,14 @@ canvas.addEventListener("pointermove", (e) => {
 
 
     ctx.beginPath();
-    ctx.arc(x, y, 10, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+    ctx.lineWigth = 10;
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    lastX = x;
+    lastY = y;    l
 });
 
 
