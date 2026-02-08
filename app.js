@@ -4,8 +4,15 @@ const brushColorInput = document.getElementById("brushColor");
 const brushOpacityInput = document.getElementById("brushOpacity");
 const brushBtn = document.getElementById("brushBtn");
 const eraserBtn = document.getElementById("eraserBtn");
+const clearBtn = document.getElementById("clearBtn");
 
 const ctx = canvas.getContext("2d");
+
+/* Ma fonction pour clear la zone de dessin */
+
+clearBtn.addEventListener("click", () => {
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+})
 
 let mode = "brush";
 /* Mes fonctions pour le mode brush ou eraser*/
