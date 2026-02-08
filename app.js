@@ -6,18 +6,57 @@ const brushBtn = document.getElementById("brushBtn");
 const eraserBtn = document.getElementById("eraserBtn");
 const clearBtn = document.getElementById("clearBtn");
 const undoBtn = document.getElementById("undoBtn");
+const cursorPreview = document.getElementById("cursorPreview");
 const history = [];
 
 const ctx = canvas.getContext("2d");
 
+/* Ma fonction pour avoir le curseur dans la zone de dessin */
+
+canvas.addEventListener("pointermove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+
+    const x = rect.left + e.offsetX;
+    const y = rect.top + e.offsetY;
+
+    cursorPreview.style.left = x + "px";
+    cursorPreview.style.top = y + "px";
+
+    cursorPreview.style.width = brushSize + "px";
+    cursorPreview.style.height = brushSize + "px";
+})
+
+canvas.addEventListener("pointerenter", () => {
+    cursorPreview.style.display = "block";
+})
+
+canvas.addEventListener("pointerleave", () => {
+    cursorPreview.style.display = "none";
+})
+
+/* Ma fonction pour la preview du cursor */
+function updateCursorPreview() {
+    cursorPreview.style.width = brushSize + "px";
+    cursorPreview.style.height = brushSize + "px";
+
+    if (mode === "eraser") {
+        cursorPreview.style.background = "transparent";
+        cursorPreview.style.border = "2px dashed #000";
+        cursorPreview.style.opacity = "1";
+    } else {
+        cursorPreview.style.background = brushColor;
+        cursorPreview.style.opacity = String(brushOpacity);
+    }
+
+}
 /* Ma fonction pour save l'etat pour mon undo */
 /*function saveState() {
     history.push(canvas.toDataURL());
 }*/
 
-function saveState(){
+function saveState() {
     const snap = canvas.toDataURL();
-    const last = history[history.length -1];
+    const last = history[history.length - 1];
     if (snap === last) return;
     history.push(snap);
 }
@@ -55,10 +94,20 @@ let mode = "brush";
 
 brushBtn.addEventListener("click", () => {
     mode = "brush";
+   
+
+    brushBtn.classList.add("active");
+    eraserBtn.classList.remove("active");
+     updateCursorPreview();
 })
 
 eraserBtn.addEventListener("click", () => {
     mode = "eraser";
+    
+
+
+    eraserBtn.classList.add("active");
+    brushBtn.classList.remove("active");
 })
 /* Ma fonction pour mon brush de base*/
 let drawing = false;
@@ -70,6 +119,7 @@ let brushSize = Number(brushSizeInput.value);
 
 brushSizeInput.addEventListener("input", () => {
     brushSize = Number(brushSizeInput.value);
+    updateCursorPreview();
 });
 
 /* Ma fonction pour le slider de choix de la couleur du brush */
@@ -77,6 +127,7 @@ let brushColor = brushColorInput.value;
 
 brushColorInput.addEventListener("input", () => {
     brushColor = brushColorInput.value;
+    updateCursorPreview();
 })
 
 /* Ma fonction pour le slider de mise a jour de la taille du brush */
@@ -84,15 +135,16 @@ let brushOpacity = Number(brushOpacityInput.value) / 100;
 
 brushOpacityInput.addEventListener("input", () => {
     brushOpacity = Number(brushOpacityInput.value) / 100;
+    updateCursorPreview();
 });
 
-
+updateCursorPreview();
 
 canvas.addEventListener("pointerdown", (e) => {
     drawing = true;
     lastX = e.offsetX;
     lastY = e.offsetY;
-    
+
 });
 
 window.addEventListener("pointerup", () => {
