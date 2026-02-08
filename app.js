@@ -5,13 +5,49 @@ const brushOpacityInput = document.getElementById("brushOpacity");
 const brushBtn = document.getElementById("brushBtn");
 const eraserBtn = document.getElementById("eraserBtn");
 const clearBtn = document.getElementById("clearBtn");
+const undoBtn = document.getElementById("undoBtn");
+const history = [];
 
 const ctx = canvas.getContext("2d");
+
+/* Ma fonction pour save l'etat pour mon undo */
+/*function saveState() {
+    history.push(canvas.toDataURL());
+}*/
+
+function saveState(){
+    const snap = canvas.toDataURL();
+    const last = history[history.length -1];
+    if (snap === last) return;
+    history.push(snap);
+}
+saveState();
+undoBtn.addEventListener("click", () => {
+    if (history.length <= 1) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        history.length = 0;
+        return;
+    }
+
+    history.pop();
+
+    const previous = history[history.length - 1];
+
+    const img = new Image();
+    img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.drawImage(img, 0, 0);
+    };
+
+    img.src = previous;
+})
 
 /* Ma fonction pour clear la zone de dessin */
 
 clearBtn.addEventListener("click", () => {
-    ctx.clearRect(0,0,canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 })
 
 let mode = "brush";
@@ -47,7 +83,7 @@ brushColorInput.addEventListener("input", () => {
 let brushOpacity = Number(brushOpacityInput.value) / 100;
 
 brushOpacityInput.addEventListener("input", () => {
-    brushOpacity = Number(brushOpacityInput.value);
+    brushOpacity = Number(brushOpacityInput.value) / 100;
 });
 
 
@@ -56,10 +92,13 @@ canvas.addEventListener("pointerdown", (e) => {
     drawing = true;
     lastX = e.offsetX;
     lastY = e.offsetY;
+    
 });
 
 window.addEventListener("pointerup", () => {
     drawing = false;
+    saveState();
+
 });
 
 
@@ -81,7 +120,7 @@ canvas.addEventListener("pointermove", (e) => {
     ctx.strokeStyle = brushColor;
     ctx.globalAlpha = brushOpacity;
 
-    if (mode === "eraser"){
+    if (mode === "eraser") {
         ctx.globalCompositeOperation = "destination-out";
     } else {
         ctx.globalCompositeOperation = "source-over";
