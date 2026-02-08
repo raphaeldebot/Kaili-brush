@@ -94,16 +94,16 @@ let mode = "brush";
 
 brushBtn.addEventListener("click", () => {
     mode = "brush";
-   
+
 
     brushBtn.classList.add("active");
     eraserBtn.classList.remove("active");
-     updateCursorPreview();
+    updateCursorPreview();
 })
 
 eraserBtn.addEventListener("click", () => {
     mode = "eraser";
-    
+
 
 
     eraserBtn.classList.add("active");
@@ -144,7 +144,7 @@ canvas.addEventListener("pointerdown", (e) => {
     drawing = true;
     lastX = e.offsetX;
     lastY = e.offsetY;
-
+    drawDot(lastX, lastY);
 });
 
 window.addEventListener("pointerup", () => {
@@ -153,6 +153,22 @@ window.addEventListener("pointerup", () => {
 
 });
 
+/* Ma fonction pour dessinner sans bouger le curseur */
+function drawDot(x, y) {
+    ctx.beginPath();
+
+    ctx.globalAlpha = brushOpacity;
+
+    if (mode === "eraser") {
+        ctx.globalCompositeOperation = "destination-out";
+    } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = brushColor;
+    }
+
+    ctx.arc(Math.round(x), Math.round(y), brushSize / 2, 0, Math.PI * 2);
+    ctx.fill()
+}
 
 canvas.addEventListener("pointermove", (e) => {
     if (!drawing) return;
