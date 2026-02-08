@@ -1,9 +1,22 @@
 const canvas = document.getElementById("kaili-brush");
 const brushSizeInput = document.getElementById("brushSize");
 const brushColorInput = document.getElementById("brushColor");
-const brushOpacityInput = document.getElementById("brushOpacity")
+const brushOpacityInput = document.getElementById("brushOpacity");
+const brushBtn = document.getElementById("brushBtn");
+const eraserBtn = document.getElementById("eraserBtn");
+
 const ctx = canvas.getContext("2d");
 
+let mode = "brush";
+/* Mes fonctions pour le mode brush ou eraser*/
+
+brushBtn.addEventListener("click", () => {
+    mode = "brush";
+})
+
+eraserBtn.addEventListener("click", () => {
+    mode = "eraser";
+})
 /* Ma fonction pour mon brush de base*/
 let drawing = false;
 let lastX = 0;
@@ -52,14 +65,23 @@ canvas.addEventListener("pointermove", (e) => {
 
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
-    ctx.lineJoin = "round";
     ctx.lineTo(x, y);
-    ctx.lineWidth = brushSize;
+
+    ctx.lineJoin = "round";
     ctx.lineCap = "round";
 
+    ctx.lineWidth = brushSize;
     ctx.strokeStyle = brushColor;
     ctx.globalAlpha = brushOpacity;
+
+    if (mode === "eraser"){
+        ctx.globalCompositeOperation = "destination-out";
+    } else {
+        ctx.globalCompositeOperation = "source-over";
+    }
+
     ctx.stroke();
+
     lastX = x;
     lastY = y;
 });
