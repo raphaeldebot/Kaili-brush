@@ -1,6 +1,7 @@
 const canvas = document.getElementById("kaili-brush");
 const brushSizeInput = document.getElementById("brushSize");
-const brushColorInput = document.getElementById("brushColor")
+const brushColorInput = document.getElementById("brushColor");
+const brushOpacityInput = document.getElementById("brushOpacity")
 const ctx = canvas.getContext("2d");
 
 /* Ma fonction pour mon brush de base*/
@@ -22,6 +23,12 @@ brushColorInput.addEventListener("input", () => {
     brushColor = brushColorInput.value;
 })
 
+/* Ma fonction pour le slider de mise a jour de la taille du brush */
+let brushOpacity = Number(brushOpacityInput.value) / 100;
+
+brushOpacityInput.addEventListener("input", () => {
+    brushOpacity = Number(brushOpacityInput.value);
+});
 
 
 
@@ -31,7 +38,7 @@ canvas.addEventListener("pointerdown", (e) => {
     lastY = e.offsetY;
 });
 
-canvas.addEventListener("pointerup", () => {
+window.addEventListener("pointerup", () => {
     drawing = false;
 });
 
@@ -49,9 +56,10 @@ canvas.addEventListener("pointermove", (e) => {
     ctx.lineTo(x, y);
     ctx.lineWidth = brushSize;
     ctx.lineCap = "round";
-    ctx.stroke();
-    ctx.strokeStyle = brushColor;
 
+    ctx.strokeStyle = brushColor;
+    ctx.globalAlpha = brushOpacity;
+    ctx.stroke();
     lastX = x;
-    lastY = y;    
+    lastY = y;
 });
